@@ -18,7 +18,7 @@ mqtt = Mqtt(app)
 @mqtt.on_connect()
 def handle_connect(client, userdata, flags, rc):
     print("CONNECTED: SUCCESFUL")
-    mqtt.subscribe('topic/temperature')
+    mqtt.subscribe('topic/esp32/temperature')
     mqtt.subscribe('topic/huminity')
 
 @mqtt.on_message()
@@ -27,7 +27,15 @@ def handle_mqtt_message(client, userdata, message):
         topic=message.topic,
         payload=message.payload.decode()
     )
-
+    stt = 0
+    counter_row = 0
+    if data['topic'] == "topic/esp32/temperature":
+        database_load = load_workbook("data.xlsx")
+        database= database_load.active
+        database.cell(row = counter_row, column = 1,value = stt)
+        database.cell(row = counter_row, column = 2,value = data['payload'])
+        database.save('data.xlsx')
+        print ("Data from topic/esp32/temperature is: ", data['payload'])
 # Publish topic
 
 
